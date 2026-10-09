@@ -26,6 +26,12 @@ snake_body = [
     [260, 200]
 ]
 
+#apple 
+apple_pos =[
+     random.randrange(0,width, block_size),
+     random.randrange(0, height, block_size),
+]
+
 change_x = block_size
 change_y = 0
 
@@ -53,7 +59,14 @@ while game_is_underway:
 
     new_head = [snake_body[0][0] + change_x, snake_body[0][1]+change_y]
     snake_body.insert(0,new_head) #adds a new body
-    snake_body.pop() #deletes the old bod
+    if new_head == apple_pos:
+         apple_pos =[
+            random.randrange(0,width, block_size),
+            random.randrange(0, height, block_size),
+         ]
+    else:
+         snake_body.pop()
+    
 
     #green background
     window.fill(green)
@@ -61,6 +74,10 @@ while game_is_underway:
     #draw snake
     for block in snake_body:
         pygame.draw.rect(window, black, [block[0], block[1], block_size, block_size])
+
+    pygame.draw.rect(
+         window, red, [apple_pos[0], apple_pos[1], block_size, block_size]
+    )
 
     #display update
     pygame.display.update()
