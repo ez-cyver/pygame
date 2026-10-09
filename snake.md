@@ -66,7 +66,14 @@ while game_is_underway:
          ]
     else:
          snake_body.pop()
-    
+
+    if(
+         snake_body[0][0] < 0
+         or snake_body [0][0] >= width
+         or snake_body [0][1] < 0
+         or snake_body [0][1] >= height
+    ):
+         game_is_underway = False #ends the gameSS
 
     #green background
     window.fill(green)
@@ -83,3 +90,4 @@ while game_is_underway:
     pygame.display.update()
 
     clock.tick(10) #set timespeed (10fps)
+
