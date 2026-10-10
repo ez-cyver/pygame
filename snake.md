@@ -23,6 +23,8 @@ window = pygame.display.set_mode((width, height))
 move_delay = 100
 move_timer = 0
 
+score = 0
+
 #establish colors
 
 black = (0,0,0)
@@ -56,7 +58,7 @@ while game_is_underway:
             sys.exit()
 
         if event.type == pygame.KEYDOWN:
-            if game_state == "start":
+            if game_state == "start":   
                 if event.key == pygame.K_SPACE:
                     game_state = "play"
         
@@ -77,7 +79,7 @@ while game_is_underway:
     if game_state == "start":
         window.fill(black)
         start_text = font1.render(  #creating the start text
-            "push SPACE to start", True, (255, 255, 255)
+            "press SPACE to start", True, (255, 255, 255)
         )
         window.blit(   #position the start text
             start_text, (width//2 - start_text.get_width()//2, height//2)
@@ -102,9 +104,11 @@ while game_is_underway:
             new_head = [snake_body[0][0] + change_x, snake_body[0][1]+change_y]
             snake_body.insert(0,new_head) #adds a new body
             if new_head == apple_pos:
+                score += 1
                 apple_pos =[
                 random.randrange(0,width, block_size),
                 random.randrange(0, height, block_size),
+                
             ]
             else:
                 snake_body.pop()
@@ -123,6 +127,13 @@ while game_is_underway:
 
             #green background
             window.fill(green)
+
+            score_render = font2.render(
+                f"your score is {score}", True, (0, 0, 0)
+            )
+            window.blit(
+                score_render, (10, 10)
+            )
 
             #draw snake
             for block in snake_body:
