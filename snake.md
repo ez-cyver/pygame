@@ -73,7 +73,11 @@ while game_is_underway:
          or snake_body [0][1] < 0
          or snake_body [0][1] >= height
     ):
-         game_is_underway = False #ends the gameSS
+         game_is_underway = False #ends the game
+
+    for block in snake_body [1:]:
+        if snake_body[0] == block:
+            game_is_underway = False #ends the game
 
     #green background
     window.fill(green)
