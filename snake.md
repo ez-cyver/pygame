@@ -1,16 +1,17 @@
 import pygame
 import random
 import sys
+import asyncio
+
 
 pygame.init()
-
 pygame.display.set_caption("snake")
 clock = pygame.time.Clock() #define time
 
 #set up startdisplay
 
-font1 = pygame.font.SysFont("arial", 50)
-font2 = pygame.font.SysFont("arial", 25)
+font1 = pygame.font.SysFont(None, 50)
+font2 = pygame.font.SysFont(None, 25)
 # initial state
 
 game_state = "start"
@@ -34,6 +35,7 @@ red = (225,0,0)
 #snake
 block_size = 20
 
+
 snake_body = [
     [300, 200],
     [280, 200],
@@ -42,8 +44,8 @@ snake_body = [
 
 #apple 
 apple_pos =[
-     random.randrange(0,width, block_size),
-     random.randrange(0, height, block_size),
+    random.randrange(0,width, block_size),
+    random.randrange(0, height, block_size),
 ]
 
 change_x = block_size
@@ -56,7 +58,6 @@ while game_is_underway:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-
         if event.type == pygame.KEYDOWN:
             if game_state == "start":   
                 if event.key == pygame.K_SPACE:
@@ -113,17 +114,32 @@ while game_is_underway:
             else:
                 snake_body.pop()
 
+            sanke_dead = False
+
             if(
                 snake_body[0][0] < 0
                 or snake_body [0][0] >= width
                 or snake_body [0][1] < 0
                 or snake_body [0][1] >= height
             ):
-                game_is_underway = False #ends the game
+                sanke_dead = True
 
             for block in snake_body [1:]:
                 if snake_body[0] == block:
-                    game_is_underway = False #ends the game
+                    sanke_dead = True
+
+
+                if sanke_dead == True:
+                    game_state = "start"
+                    snake_body = [[300, 200], [280, 200], [260, 200]]
+                    change_x = block_size
+                    change_y = 0
+                    score = 0
+                    apple_pos = [
+                        random.randrange(0, width, block_size),
+                        random.randrange(0, height, block_size),
+                    ]
+                    move_timer = 0
 
             #green background
             window.fill(green)
@@ -142,7 +158,9 @@ while game_is_underway:
             pygame.draw.rect(
                 window, red, [apple_pos[0], apple_pos[1], block_size, block_size]
             )
-    dt = clock.tick(200) #set timespeed (200fps)
+
+
+    dt = clock.tick(60) #set timespeed (60fps)
     move_timer += dt
 
     #display update
