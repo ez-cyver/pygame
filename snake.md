@@ -197,6 +197,3 @@ while game_is_underway:
 
     #display update
     pygame.display.update()
-
-    #display update
-    pygame.display.update()
