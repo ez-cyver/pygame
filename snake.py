@@ -117,8 +117,8 @@ while game_is_underway:
                 elif event.key == pygame.K_DOWN and change_y_1 == 0:
                     change_x_1 = 0
                     change_y_1 = block_size
-
-            if multyplayer == True:
+  
+            if multyplayer == True and game_state == "play":
                 if event.key == pygame.K_a and change_x_2 == 0:
                     change_x_2 = -block_size
                     change_y_2 = 0
@@ -174,6 +174,8 @@ while game_is_underway:
             if new_head_1 == apple_pos_1:
                 if multyplayer == False:
                     score += 1
+                else:
+                    score_player_1 += 1
                 
                 apple_pos_1 = [
                     random.randrange(0, width, block_size),
@@ -190,8 +192,6 @@ while game_is_underway:
             if multyplayer == False:
                 if record_score < score:
                     record_score += 1
-
-
 
             sanke_dead = False
 
@@ -303,24 +303,50 @@ while game_is_underway:
                 )
     
     elif game_state == "menu":
-        window.fill(black)
-        game_over_text = font1.render(  #creating the start text
-                    f"GAME OVER your score is {score}", True, (255, 255, 255)
-        )
+        if multyplayer == False:
+            window.fill(black)
+            game_over_text = font1.render(  #creating the start text
+                        f"GAME OVER your score is {score}", True, (255, 255, 255)
+            )
 
-        retry_text = font1.render(
-            "Press SPACE for RETRY", True, (225, 225, 225)
-        )
-        quit_text = font2.render(
-            "Press q for QUIT",True, (225, 225, 225)
-        )
+            retry_text = font1.render(
+                "Press SPACE for RETRY", True, (225, 225, 225)
+            )
+            quit_text = font2.render(
+                "Press q for QUIT",True, (225, 225, 225)
+            )
 
-        window.blits([
-            (game_over_text, (width//2 - game_over_text.get_width()//2, height//2 + start_text.get_height() - 220)),
-            (retry_text, (width//2 - retry_text.get_width()//2, height//2 + start_text.get_height() - 130)),
-            (quit_text, (width//2 - quit_text.get_width()//2, height//2))
-        ])
+            window.blits([
+                (game_over_text, (width//2 - game_over_text.get_width()//2, height//2 + start_text.get_height() - 220)),
+                (retry_text, (width//2 - retry_text.get_width()//2, height//2 + start_text.get_height() - 130)),
+                (quit_text, (width//2 - quit_text.get_width()//2, height//2))
+            ])
+        elif multyplayer == True:
+            window.fill(black)
 
+            game_over_text = font1.render(
+                "GAME OVER", True, (225, 225, 225)
+            )
+            score_resulus_1 = font1.render(
+                f"Player 1's results: {score_player_1}", True, (225, 225, 225)
+            )
+            score_resulus_2 = font1.render(
+                f"Player 2's results: {score_player_2}", True, (225, 225, 225)
+            )
+            retry_text = font1.render(
+                "Press SPACE for RETRY", True, (225, 225, 225)
+            )
+            quit_text = font2.render(
+                "Press q for QUIT",True, (225, 225, 225)
+            )
+
+            window.blits([
+                (game_over_text, (width//2 - game_over_text.get_width()//2, 50)),
+                (score_resulus_1, (width//2 - score_resulus_1.get_width()//2, 110)),
+                (score_resulus_2, (width//2 - score_resulus_2.get_width()//2, 155)),
+                (retry_text, (width//2 - retry_text.get_width()//2, 250)),
+                (quit_text, (width//2 - quit_text.get_width()//2, 310)),
+            ])
     dt = clock.tick(60) #set timespeed (60fps)
     move_timer += dt
 
