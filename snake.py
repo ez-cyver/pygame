@@ -24,10 +24,11 @@ multyplayer = False
 
 move_delay = 100
 move_timer = 0
-
+#scores
 score = 0
 record_score = 0
-
+score_player_1 = 0
+score_player_2 = 0
 #establish colors
 
 black = (0,0,0)
@@ -99,6 +100,8 @@ while game_is_underway:
                     move_timer = 0
                     game_state = "play"
                     score = 0
+                    score_player_1 = 0
+                    score_player_2 = 0
 
             
             elif game_state == "play":
@@ -129,27 +132,39 @@ while game_is_underway:
                     change_x_2 = 0
                     change_y_2 = block_size
 
+    if game_state == "select gamemode":
+        window.fill(black)
+        welcome_text = font1.render(   
+            "Welcome to Snake!", True, (255, 255, 255)
+        )
+        singleplayer_text = font1.render(
+            "PRESS 1 for SINGLEPLAYER", True, (225, 225, 225)
+        )
+        multyplayer_text = font1.render(
+            "PRESS 2 for MULTIPLAYER (2 P.)", True, (225, 225,225)
+        )
+
+        window.blits([
+            (welcome_text, (width//2 - welcome_text.get_width()//2, height//2 + welcome_text.get_height() - 220)),
+            (singleplayer_text, (width//2 - singleplayer_text.get_width()//2, height//2 - 30)),
+            (multyplayer_text, (width//2 - multyplayer_text.get_width()//2, height//2 + singleplayer_text.get_height() - 10))
+        ])
+
+    
     if game_state == "start":
         window.fill(black)
         start_text = font1.render(  #creating the start text
             "press SPACE to start", True, (255, 255, 255)
         )
-        window.blit(   #position the start text
-            start_text, (width//2 - start_text.get_width()//2, height//2)
-        )
         controll_text= font2.render(   #creating the controll text
             "controll with arrow keys", True, (225, 225, 225)
         )
-        window.blit( #position the controll text
-            controll_text, (width//2 - controll_text.get_width()//2, height//2 + start_text.get_height() - 130)
-        )
-        welcome_text = font1.render(   #create welcome text
-            "Welcome to Snake!", True, (255, 255, 255)
-        )
-        window.blit(   #position the welcome text
-            welcome_text, (width//2 - welcome_text.get_width()//2, height//2 + start_text.get_height() - 220)
-        )
 
+        window.blits([
+            (start_text, (width//2 - start_text.get_width()//2, height//2)),
+            (controll_text, (width//2 - controll_text.get_width()//2, height//2 + start_text.get_height() - 130))
+
+        ])
 
     elif game_state == "play":
         if move_timer >= move_delay:
@@ -157,13 +172,15 @@ while game_is_underway:
             new_head_1 = [snake_body_1[0][0] + change_x_1, snake_body_1[0][1]+change_y_1]
             snake_body_1.insert(0,new_head_1) #adds a new body
             if new_head_1 == apple_pos_1:
-                score += 1
+                if multyplayer == False:
+                    score += 1
+                
                 apple_pos_1 = [
                     random.randrange(0, width, block_size),
                     random.randrange(0, height, block_size),
                 ]
             elif multyplayer == True and new_head_1 == apple_pos_2:
-                score += 1
+                score_player_1 += 1
                 apple_pos_2 = [
                     random.randrange(0, width, block_size),
                     random.randrange(0, height, block_size),
@@ -173,6 +190,8 @@ while game_is_underway:
             if multyplayer == False:
                 if record_score < score:
                     record_score += 1
+
+
 
             sanke_dead = False
 
@@ -195,13 +214,13 @@ while game_is_underway:
                 new_head_2 = [snake_body_2[0][0] + change_x_2, snake_body_2[0][1]+change_y_2]
                 snake_body_2.insert(0,new_head_2) #adds a new body
                 if new_head_2 == apple_pos_1:
-                    score += 1
                     apple_pos_1 = [
                         random.randrange(0, width, block_size),
                         random.randrange(0, height, block_size),
                     ]
+                    score_player_2 += 1
                 elif new_head_2 == apple_pos_2:
-                    score += 1
+                    score_player_2 += 1
                     apple_pos_2 = [
                         random.randrange(0, width, block_size),
                         random.randrange(0, height, block_size),
@@ -247,16 +266,27 @@ while game_is_underway:
                 score_render = font2.render(
                     f"current score: {score}", True, (0, 0, 0)
                 )
-                window.blit(
-                    score_render, (10, 10)
-                )
                 record_score_render = font2.render(
                     f"best score: {record_score}", True, (0, 0, 0)
                 )
-                window.blit(
-                    record_score_render, (width - record_score_render.get_width() - 10, 10)
+
+                window.blits([
+                    (score_render, (10, 10)),
+                    (record_score_render, (width - record_score_render.get_width() - 10, 10))
+                ])
+
+            if multyplayer == True:
+                score_player_1_render = font2.render(
+                    f"P.1 score:{score_player_1}", True, (0, 0, 0)
+                )
+                score_player_2_render = font2.render(
+                    f"P.2 score:{score_player_2}", True, (0, 0, 0)
                 )
 
+                window.blits([
+                    (score_player_1_render, (10, 10)),
+                    (score_player_2_render, (width - score_player_2_render.get_width() - 10, 10))
+                ])
             #draw snake
             for block in snake_body_1:
                 pygame.draw.rect(window, black, [block[0], block[1], block_size, block_size])
@@ -277,23 +307,19 @@ while game_is_underway:
         game_over_text = font1.render(  #creating the start text
                     f"GAME OVER your score is {score}", True, (255, 255, 255)
         )
-        window.blit(   #position the game over text
-            game_over_text, (width//2 - game_over_text.get_width()//2, height//2 + start_text.get_height() - 220)
-        )
 
         retry_text = font1.render(
             "Press SPACE for RETRY", True, (225, 225, 225)
         )
-        window.blit( #position the controll text
-            retry_text, (width//2 - retry_text.get_width()//2, height//2 + start_text.get_height() - 130)
-        )
         quit_text = font2.render(
             "Press q for QUIT",True, (225, 225, 225)
         )
-        window.blit(
-            quit_text, (width//2 - quit_text.get_width()//2, height//2)
-        )
 
+        window.blits([
+            (game_over_text, (width//2 - game_over_text.get_width()//2, height//2 + start_text.get_height() - 220)),
+            (retry_text, (width//2 - retry_text.get_width()//2, height//2 + start_text.get_height() - 130)),
+            (quit_text, (width//2 - quit_text.get_width()//2, height//2))
+        ])
 
     dt = clock.tick(60) #set timespeed (60fps)
     move_timer += dt
