@@ -1,7 +1,6 @@
 import pygame
 import random
 import sys
-import asyncio
 
 
 pygame.init()
@@ -10,8 +9,8 @@ clock = pygame.time.Clock() #define time
 
 #set up startdisplay
 
-font1 = pygame.font.SysFont(None, 50)
-font2 = pygame.font.SysFont(None, 25)
+font1 = pygame.font.Font(None, 50)
+font2 = pygame.font.Font(None, 25)
 # initial state
 
 game_state = "start"
@@ -58,11 +57,22 @@ while game_is_underway:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        
         if event.type == pygame.KEYDOWN:
             if game_state == "start":   
                 if event.key == pygame.K_SPACE:
                     game_state = "play"
-        
+
+            elif game_state == "menu":
+                if event.key == pygame.K_q:
+                    pygame.quit()
+                    sys.exit()
+                elif event.key == pygame.K_SPACE:
+                    move_timer = 0
+                    game_state = "play"
+                    score = 0
+
+            
             elif game_state == "play":
                 if event.key == pygame.K_LEFT and change_x == 0:
                     change_x = -block_size
@@ -130,17 +140,17 @@ while game_is_underway:
 
 
                 if sanke_dead == True:
-                    game_state = "start"
+                    game_state = "menu"
                     snake_body = [[300, 200], [280, 200], [260, 200]]
                     change_x = block_size
                     change_y = 0
-                    score = 0
                     apple_pos = [
                         random.randrange(0, width, block_size),
                         random.randrange(0, height, block_size),
                     ]
                     move_timer = 0
 
+            
             #green background
             window.fill(green)
 
@@ -158,10 +168,35 @@ while game_is_underway:
             pygame.draw.rect(
                 window, red, [apple_pos[0], apple_pos[1], block_size, block_size]
             )
+    
+    elif game_state == "menu":
+        window.fill(black)
+        game_over_text = font1.render(  #creating the start text
+                    f"GAME OVER your score is {score}", True, (255, 255, 255)
+        )
+        window.blit(   #position the game over text
+            game_over_text, (width//2 - game_over_text.get_width()//2, height//2 + start_text.get_height() - 220)
+        )
+
+        retry_text = font1.render(
+            "Press SPACE for RETRY", True, (225, 225, 225)
+        )
+        window.blit( #position the controll text
+            retry_text, (width//2 - retry_text.get_width()//2, height//2 + start_text.get_height() - 130)
+        )
+        quit_text = font2.render(
+            "Press q for QUIT",True, (225, 225, 225)
+        )
+        window.blit(
+            quit_text, (width//2 - quit_text.get_width()//2, height//2)
+        )
 
 
     dt = clock.tick(60) #set timespeed (60fps)
     move_timer += dt
+
+    #display update
+    pygame.display.update()
 
     #display update
     pygame.display.update()
