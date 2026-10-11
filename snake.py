@@ -13,17 +13,20 @@ font1 = pygame.font.Font(None, 50)
 font2 = pygame.font.Font(None, 25)
 # initial state
 
-game_state = "start"
+game_state = "select gamemode"
 
 #establish height and width
 width = 600
 height = 400
 window = pygame.display.set_mode((width, height))
 
+multyplayer = False
+
 move_delay = 100
 move_timer = 0
 
 score = 0
+record_score = 0
 
 #establish colors
 
@@ -34,21 +37,36 @@ red = (225,0,0)
 #snake
 block_size = 20
 
-
-snake_body = [
+snake_body_1 = [
     [300, 200],
     [280, 200],
     [260, 200]
 ]
 
+snake_body_2 = [
+    [300, 300],
+    [280, 300],
+    [260, 300]
+]
+
+
 #apple 
-apple_pos =[
+apple_pos_1 = [
     random.randrange(0,width, block_size),
     random.randrange(0, height, block_size),
 ]
 
-change_x = block_size
-change_y = 0
+apple_pos_2 = [
+    random.randrange(0,width, block_size),
+    random.randrange(0, height, block_size),
+]
+
+change_x_1 = block_size
+change_y_1 = 0
+
+change_x_2 = block_size
+change_y_2 = 0
+
 
 game_is_underway = True
 
@@ -59,7 +77,17 @@ while game_is_underway:
             sys.exit()
         
         if event.type == pygame.KEYDOWN:
-            if game_state == "start":   
+
+            if game_state == "select gamemode":
+                if event.key  == pygame.K_1:
+                    multyplayer = False
+                    game_state  = "start"
+                elif event.key == pygame.K_2:
+                    multyplayer = True
+                    game_state  = "start"
+
+
+            elif game_state == "start":   
                 if event.key == pygame.K_SPACE:
                     game_state = "play"
 
@@ -74,18 +102,32 @@ while game_is_underway:
 
             
             elif game_state == "play":
-                if event.key == pygame.K_LEFT and change_x == 0:
-                    change_x = -block_size
-                    change_y = 0
-                elif event.key == pygame.K_RIGHT and change_x==0:
-                    change_x = block_size
-                    change_y = 0
-                elif event.key == pygame.K_UP and change_y == 0:
-                    change_x = 0
-                    change_y = -block_size
-                elif event.key == pygame.K_DOWN and change_y == 0:
-                    change_x = 0
-                    change_y = block_size
+                if event.key == pygame.K_LEFT and change_x_1 == 0:
+                    change_x_1 = -block_size
+                    change_y_1 = 0
+                elif event.key == pygame.K_RIGHT and change_x_1 ==0:
+                    change_x_1 = block_size
+                    change_y_1 = 0
+                elif event.key == pygame.K_UP and change_y_1 == 0:
+                    change_x_1 = 0
+                    change_y_1 = -block_size
+                elif event.key == pygame.K_DOWN and change_y_1 == 0:
+                    change_x_1 = 0
+                    change_y_1 = block_size
+
+            if multyplayer == True:
+                if event.key == pygame.K_a and change_x_2 == 0:
+                    change_x_2 = -block_size
+                    change_y_2 = 0
+                elif event.key == pygame.K_d and change_x_2 == 0:
+                    change_x_2 = block_size
+                    change_y_2 = 0
+                elif event.key == pygame.K_w and change_y_2 == 0:
+                    change_x_2 = 0
+                    change_y_2 = -block_size
+                elif event.key == pygame.K_s and change_y_2 == 0:
+                    change_x_2 = 0
+                    change_y_2 = block_size
 
     if game_state == "start":
         window.fill(black)
@@ -112,62 +154,123 @@ while game_is_underway:
     elif game_state == "play":
         if move_timer >= move_delay:
             move_timer = 0
-            new_head = [snake_body[0][0] + change_x, snake_body[0][1]+change_y]
-            snake_body.insert(0,new_head) #adds a new body
-            if new_head == apple_pos:
+            new_head_1 = [snake_body_1[0][0] + change_x_1, snake_body_1[0][1]+change_y_1]
+            snake_body_1.insert(0,new_head_1) #adds a new body
+            if new_head_1 == apple_pos_1:
                 score += 1
-                apple_pos =[
-                random.randrange(0,width, block_size),
-                random.randrange(0, height, block_size),
-                
-            ]
+                apple_pos_1 = [
+                    random.randrange(0, width, block_size),
+                    random.randrange(0, height, block_size),
+                ]
+            elif multyplayer == True and new_head_1 == apple_pos_2:
+                score += 1
+                apple_pos_2 = [
+                    random.randrange(0, width, block_size),
+                    random.randrange(0, height, block_size),
+                ]
             else:
-                snake_body.pop()
+                snake_body_1.pop()
+            if multyplayer == False:
+                if record_score < score:
+                    record_score += 1
 
             sanke_dead = False
 
             if(
-                snake_body[0][0] < 0
-                or snake_body [0][0] >= width
-                or snake_body [0][1] < 0
-                or snake_body [0][1] >= height
+                snake_body_1[0][0] < 0
+                or snake_body_1 [0][0] >= width
+                or snake_body_1 [0][1] < 0
+                or snake_body_1 [0][1] >= height
             ):
                 sanke_dead = True
 
-            for block in snake_body [1:]:
-                if snake_body[0] == block:
+            for block in snake_body_1 [1:]:
+                if snake_body_1[0] == block:
                     sanke_dead = True
 
 
-                if sanke_dead == True:
-                    game_state = "menu"
-                    snake_body = [[300, 200], [280, 200], [260, 200]]
-                    change_x = block_size
-                    change_y = 0
-                    apple_pos = [
+
+
+            if multyplayer == True:#sanake_2
+                new_head_2 = [snake_body_2[0][0] + change_x_2, snake_body_2[0][1]+change_y_2]
+                snake_body_2.insert(0,new_head_2) #adds a new body
+                if new_head_2 == apple_pos_1:
+                    score += 1
+                    apple_pos_1 = [
                         random.randrange(0, width, block_size),
                         random.randrange(0, height, block_size),
                     ]
-                    move_timer = 0
+                elif new_head_2 == apple_pos_2:
+                    score += 1
+                    apple_pos_2 = [
+                        random.randrange(0, width, block_size),
+                        random.randrange(0, height, block_size),
+                    ]
+                else:
+                    snake_body_2.pop()
 
+                if(
+                    snake_body_2[0][0] < 0
+                    or snake_body_2 [0][0] >= width
+                    or snake_body_2 [0][1] < 0
+                    or snake_body_2 [0][1] >= height
+                ):
+                    sanke_dead = True
+
+                for block in snake_body_2 [1:]:
+                    if snake_body_2[0] == block:
+                        sanke_dead = True
+
+
+            if sanke_dead == True:
+                game_state = "menu"
+                snake_body_1 = [[300, 200], [280, 200], [260, 200]]
+                snake_body_2 = [[300, 300], [280, 300], [260, 300]]
+                change_x_1 = block_size
+                change_y_1 = 0
+                change_x_2 = block_size
+                change_y_2 = 0
+                apple_pos_1 = [
+                    random.randrange(0, width, block_size),
+                    random.randrange(0, height, block_size),
+                ]
+                apple_pos_2 = [
+                    random.randrange(0, width, block_size),
+                    random.randrange(0, height, block_size),
+                ]
+                move_timer = 0
             
             #green background
             window.fill(green)
 
-            score_render = font2.render(
-                f"your score is {score}", True, (0, 0, 0)
-            )
-            window.blit(
-                score_render, (10, 10)
-            )
+            if multyplayer == False:
+                score_render = font2.render(
+                    f"current score: {score}", True, (0, 0, 0)
+                )
+                window.blit(
+                    score_render, (10, 10)
+                )
+                record_score_render = font2.render(
+                    f"best score: {record_score}", True, (0, 0, 0)
+                )
+                window.blit(
+                    record_score_render, (width - record_score_render.get_width() - 10, 10)
+                )
 
             #draw snake
-            for block in snake_body:
+            for block in snake_body_1:
                 pygame.draw.rect(window, black, [block[0], block[1], block_size, block_size])
 
             pygame.draw.rect(
-                window, red, [apple_pos[0], apple_pos[1], block_size, block_size]
+                window, red, [apple_pos_1[0], apple_pos_1[1], block_size, block_size]
             )
+
+            if multyplayer == True:
+                for block in snake_body_2:
+                    pygame.draw.rect(window, (0, 0, 255), [block[0], block[1], block_size, block_size])
+                pygame.draw.rect(
+                    window, red, [apple_pos_2[0], apple_pos_2[1], block_size, block_size]
+                )
     
     elif game_state == "menu":
         window.fill(black)
