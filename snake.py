@@ -29,7 +29,12 @@ score = 0
 record_score = 0
 score_player_1 = 0
 score_player_2 = 0
-winner = "noone"
+winner = "no one"
+
+sanke_dead = False
+snake_2_dead = False
+
+
 #establish colors
 
 black = (0,0,0)
@@ -103,9 +108,11 @@ while game_is_underway:
                     score = 0
                     score_player_1 = 0
                     score_player_2 = 0
+                    snake_2_dead = 0
+                    sanke_dead = 0
 
             
-            elif game_state == "play":
+            elif game_state == "play" and sanke_dead == False:
                 if event.key == pygame.K_LEFT and change_x_1 == 0:
                     change_x_1 = -block_size
                     change_y_1 = 0
@@ -119,7 +126,7 @@ while game_is_underway:
                     change_x_1 = 0
                     change_y_1 = block_size
   
-            if multyplayer == True and game_state == "play":
+            if multyplayer == True and game_state == "play" and snake_2_dead == False:
                 if event.key == pygame.K_a and change_x_2 == 0:
                     change_x_2 = -block_size
                     change_y_2 = 0
@@ -168,6 +175,8 @@ while game_is_underway:
         ])
 
     elif game_state == "play":
+
+        
         if move_timer >= move_delay:
             move_timer = 0
             new_head_1 = [snake_body_1[0][0] + change_x_1, snake_body_1[0][1]+change_y_1]
@@ -194,7 +203,6 @@ while game_is_underway:
                 if record_score < score:
                     record_score += 1
 
-            sanke_dead = False
 
             if(
                 snake_body_1[0][0] < 0
@@ -204,9 +212,11 @@ while game_is_underway:
             ):
                 sanke_dead = True
 
+
+                
             for block in snake_body_1 [1:]:
                 if snake_body_1[0] == block:
-                    sanke_dead = True
+                        sanke_dead = True
 
 
 
@@ -235,14 +245,16 @@ while game_is_underway:
                     or snake_body_2 [0][1] < 0
                     or snake_body_2 [0][1] >= height
                 ):
-                    sanke_dead = True
+                    snake_2_dead = True
 
                 for block in snake_body_2 [1:]:
                     if snake_body_2[0] == block:
-                        sanke_dead = True
+                        if multyplayer == False:
+                            sanke_2_dead = True
 
 
             if sanke_dead == True:
+                game_state = "menu"
                 game_state = "menu"
                 snake_body_1 = [[300, 200], [280, 200], [260, 200]]
                 snake_body_2 = [[300, 300], [280, 300], [260, 300]]
@@ -302,6 +314,15 @@ while game_is_underway:
                 pygame.draw.rect(
                     window, red, [apple_pos_2[0], apple_pos_2[1], block_size, block_size]
                 )
+
+            if multyplayer == False:
+                if sanke_dead == True:
+                    game_state = "menu"
+
+            if multyplayer == True:
+                if sanke_dead == True and snake_2_dead == True:
+                    game_state = "menu"
+                
     
     elif game_state == "menu":
         if multyplayer == False:
