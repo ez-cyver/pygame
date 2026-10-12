@@ -29,6 +29,7 @@ score = 0
 record_score = 0
 score_player_1 = 0
 score_player_2 = 0
+winner = "noone"
 #establish colors
 
 black = (0,0,0)
@@ -293,7 +294,7 @@ while game_is_underway:
 
             pygame.draw.rect(
                 window, red, [apple_pos_1[0], apple_pos_1[1], block_size, block_size]
-            )
+            ) 
 
             if multyplayer == True:
                 for block in snake_body_2:
@@ -305,8 +306,9 @@ while game_is_underway:
     elif game_state == "menu":
         if multyplayer == False:
             window.fill(black)
+            
             game_over_text = font1.render(  #creating the start text
-                        f"GAME OVER your score is {score}", True, (255, 255, 255)
+                f"GAME OVER your score is {score}", True, (255, 255, 255)
             )
 
             retry_text = font1.render(
@@ -324,6 +326,15 @@ while game_is_underway:
         elif multyplayer == True:
             window.fill(black)
 
+            if score_player_1 > score_player_2:
+                winner = "player 1"
+
+            elif score_player_2 > score_player_1:
+                winner = "player 2"
+
+            elif score_player_1 == score_player_2:
+                winner = "no one"
+
             game_over_text = font1.render(
                 "GAME OVER", True, (225, 225, 225)
             )
@@ -339,6 +350,9 @@ while game_is_underway:
             quit_text = font2.render(
                 "Press q for QUIT",True, (225, 225, 225)
             )
+            winner_text = font1.render(
+                f"WINNER: {winner}", True, (255, 0, 0)
+            )
 
             window.blits([
                 (game_over_text, (width//2 - game_over_text.get_width()//2, 50)),
@@ -346,6 +360,7 @@ while game_is_underway:
                 (score_resulus_2, (width//2 - score_resulus_2.get_width()//2, 155)),
                 (retry_text, (width//2 - retry_text.get_width()//2, 250)),
                 (quit_text, (width//2 - quit_text.get_width()//2, 310)),
+                (winner_text, (width//2 - winner_text.get_width()//2, 200))
             ])
     dt = clock.tick(60) #set timespeed (60fps)
     move_timer += dt
