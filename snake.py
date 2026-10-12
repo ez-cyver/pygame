@@ -108,8 +108,8 @@ while game_is_underway:
                     score = 0
                     score_player_1 = 0
                     score_player_2 = 0
-                    snake_2_dead = 0
-                    sanke_dead = 0
+                    snake_2_dead = False
+                    sanke_dead = False
 
             
             elif game_state == "play" and sanke_dead == False:
@@ -166,23 +166,14 @@ while game_is_underway:
         )
 
         if multyplayer == False:
-            controll_text= font1.render(   #creating the controll text
-                "controll with arrow keys", True, (225, 225, 225)
-            )
-            window.blit()
-            controll_text, (width//2 - controll_text.get_width()//2, height//2 + start_text.get_height() - 130
-            )
-
-        if multyplayer == True:
-            controll_text_1 = font1.render(
-                "P. 1 (black), controll with arrow keys", True, (225, 225, 225)
-            )
-            controll_text_2 = font1.render(
-                "P. 2 (blue) controll witj wasd", True, (225, 225, 225)
-            )
+            controll_text = font2.render("controll with arrow keys", True, (225, 225, 225))
+            window.blit(controll_text, (width//2 - controll_text.get_width()//2, height//2 - 60))
+        else:
+            controll_text_1 = font2.render("Player 1. (black): controll with arrow keys", True, (225, 225, 225))
+            controll_text_2 = font2.render("Player 2. (blue): controll with WASD", True, (225, 225, 225))
             window.blits([
-                (controll_text_1, (width//2 - controll_text_1.get_width()//2, height//2 - 80)),   # y = 120
-                (controll_text_2, (width//2 - controll_text_2.get_width()//2, height//2 - 50)),   # y = 150
+                (controll_text_1, (width//2 - controll_text_1.get_width()//2, height//2 - 80)),
+                (controll_text_2, (width//2 - controll_text_2.get_width()//2, height//2 - 50)),
             ])
 
         window.blit(
@@ -194,49 +185,50 @@ while game_is_underway:
         
         if move_timer >= move_delay:
             move_timer = 0
-            new_head_1 = [snake_body_1[0][0] + change_x_1, snake_body_1[0][1]+change_y_1]
-            snake_body_1.insert(0,new_head_1) #adds a new body
-            if new_head_1 == apple_pos_1:
-                if multyplayer == False:
-                    score += 1
-                else:
+            if not sanke_dead:
+                new_head_1 = [snake_body_1[0][0] + change_x_1, snake_body_1[0][1]+change_y_1]
+                snake_body_1.insert(0,new_head_1) #adds a new body
+                if new_head_1 == apple_pos_1:
+                    if multyplayer == False:
+                        score += 1
+                    else:
+                        score_player_1 += 1
+                    
+                    apple_pos_1 = [
+                        random.randrange(0, width, block_size),
+                        random.randrange(0, height, block_size),
+                    ]
+                elif multyplayer == True and new_head_1 == apple_pos_2:
                     score_player_1 += 1
-                
-                apple_pos_1 = [
-                    random.randrange(0, width, block_size),
-                    random.randrange(0, height, block_size),
-                ]
-            elif multyplayer == True and new_head_1 == apple_pos_2:
-                score_player_1 += 1
-                apple_pos_2 = [
-                    random.randrange(0, width, block_size),
-                    random.randrange(0, height, block_size),
-                ]
-            else:
-                snake_body_1.pop()
-            if multyplayer == False:
-                if record_score < score:
-                    record_score += 1
+                    apple_pos_2 = [
+                        random.randrange(0, width, block_size),
+                        random.randrange(0, height, block_size),
+                    ]
+                else:
+                    snake_body_1.pop()
+                if multyplayer == False:
+                    if record_score < score:
+                        record_score += 1
 
 
-            if(
-                snake_body_1[0][0] < 0
-                or snake_body_1 [0][0] >= width
-                or snake_body_1 [0][1] < 0
-                or snake_body_1 [0][1] >= height
-            ):
-                sanke_dead = True
+                if(
+                    snake_body_1[0][0] < 0
+                    or snake_body_1 [0][0] >= width
+                    or snake_body_1 [0][1] < 0
+                    or snake_body_1 [0][1] >= height
+                ):
+                    sanke_dead = True
 
 
-                
-            for block in snake_body_1 [1:]:
-                if snake_body_1[0] == block:
-                        sanke_dead = True
+                    
+                for block in snake_body_1 [1:]:
+                    if snake_body_1[0] == block:
+                            sanke_dead = True
 
 
 
 
-            if multyplayer == True:#sanake_2
+            if multyplayer == True and not snake_2_dead:
                 new_head_2 = [snake_body_2[0][0] + change_x_2, snake_body_2[0][1]+change_y_2]
                 snake_body_2.insert(0,new_head_2) #adds a new body
                 if new_head_2 == apple_pos_1:
@@ -264,17 +256,24 @@ while game_is_underway:
 
                 for block in snake_body_2 [1:]:
                     if snake_body_2[0] == block:
-                        if multyplayer == False:
-                            sanke_2_dead = True
-
-                for block in snake_body_2 [1:]:
-                    if snake_body_2[0] == block:
-                        if multyplayer == False:
-                            sanke_2_dead = True
+                        snake_2_dead = True
 
 
-            if sanke_dead == True:
-                game_state = "menu"
+            if multyplayer == True:
+                if snake_body_1[0] in snake_body_2:
+                    sanke_dead = True
+                if snake_body_2[0] in snake_body_1:
+                    snake_2_dead = True
+
+            if sanke_dead:
+                snake_body_1 = [[-1000, -1000]]
+            if snake_2_dead:
+                snake_body_2 = [[-1000, -1000]]
+
+            
+            game_over = sanke_dead and (snake_2_dead or not multyplayer)
+
+            if game_over:
                 game_state = "menu"
                 snake_body_1 = [[300, 200], [280, 200], [260, 200]]
                 snake_body_2 = [[300, 300], [280, 300], [260, 300]]
