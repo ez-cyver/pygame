@@ -164,15 +164,30 @@ while game_is_underway:
         start_text = font1.render(  #creating the start text
             "press SPACE to start", True, (255, 255, 255)
         )
-        controll_text= font2.render(   #creating the controll text
-            "controll with arrow keys", True, (225, 225, 225)
+
+        if multyplayer == False:
+            controll_text= font1.render(   #creating the controll text
+                "controll with arrow keys", True, (225, 225, 225)
+            )
+            window.blit()
+            controll_text, (width//2 - controll_text.get_width()//2, height//2 + start_text.get_height() - 130
+            )
+
+        if multyplayer == True:
+            controll_text_1 = font1.render(
+                "P. 1 (black), controll with arrow keys", True, (225, 225, 225)
+            )
+            controll_text_2 = font1.render(
+                "P. 2 (blue) controll witj wasd", True, (225, 225, 225)
+            )
+            window.blits([
+                (controll_text_1, (width//2 - controll_text_1.get_width()//2, height//2 - 80)),   # y = 120
+                (controll_text_2, (width//2 - controll_text_2.get_width()//2, height//2 - 50)),   # y = 150
+            ])
+
+        window.blit(
+            start_text, (width//2 - start_text.get_width()//2, height//2)
         )
-
-        window.blits([
-            (start_text, (width//2 - start_text.get_width()//2, height//2)),
-            (controll_text, (width//2 - controll_text.get_width()//2, height//2 + start_text.get_height() - 130))
-
-        ])
 
     elif game_state == "play":
 
@@ -246,6 +261,11 @@ while game_is_underway:
                     or snake_body_2 [0][1] >= height
                 ):
                     snake_2_dead = True
+
+                for block in snake_body_2 [1:]:
+                    if snake_body_2[0] == block:
+                        if multyplayer == False:
+                            sanke_2_dead = True
 
                 for block in snake_body_2 [1:]:
                     if snake_body_2[0] == block:
